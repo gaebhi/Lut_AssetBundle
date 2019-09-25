@@ -9,8 +9,17 @@ public class SampleSceneManager : MonoBehaviour
     {
         get; private set;
     }
-    private const string m_uri = "http://localhost:15000/";
-    private const string m_bundleName = "object/room_a";
+
+    public static AssetBundle OtherBundle
+    {
+        get; private set;
+    }
+
+    private const string m_uri = "http://kkd89.cafe24app.com/AssetBundles";
+
+    private const string m_bundleName = "object/env";
+    private const string m_otherBundleName = "object/others";
+
     private string m_platform = "win";
 
     private IEnumerator Start()
@@ -30,14 +39,14 @@ public class SampleSceneManager : MonoBehaviour
             yield break;
         }
 
-        var op = manifestBundle.LoadAssetAsync<AssetBundleManifest>("assetbundlemanifest");
-        yield return op;
+        var request = manifestBundle.LoadAssetAsync<AssetBundleManifest>("assetbundlemanifest");
+        yield return request;
 
-        var manifest = op.asset as AssetBundleManifest;
+        var manifest = request.asset as AssetBundleManifest;
 
-        foreach (var a in manifest.GetAllAssetBundles())
+        foreach (var temp in manifest.GetAllAssetBundles())
         {
-            Debug.Log(a);
+            Debug.Log(temp);
         }
 
         var deps = manifest.GetAllDependencies(m_bundleName);
@@ -51,22 +60,44 @@ public class SampleSceneManager : MonoBehaviour
         }
 
         //이제 원하는 에셋번들 로드
-        AssetBundleManager roomBundleManager = AssetBundleManager.Factory(uri, m_bundleName);
-        yield return roomBundleManager.GetAssetBundles();
-        Bundle = roomBundleManager.Bundle;
+        AssetBundleManager otherBundleManager = AssetBundleManager.Factory(uri, m_otherBundleName);
+        yield return otherBundleManager.GetAssetBundles();
+        OtherBundle = otherBundleManager.Bundle;
 
-        if (roomBundleManager.Bundle != null)
+        if (OtherBundle != null)
         {
-            foreach (string assetName in Bundle.GetAllAssetNames())
+            Debug.Log(OtherBundle);
+            foreach (string assetName in OtherBundle.GetAllAssetNames())
             {
-                AssetBundleRequest abr = Bundle.LoadAssetAsync<GameObject>(assetName);
+                Debug.Log(assetName);
+                var abr = OtherBundle.LoadAssetAsync<GameObject>(assetName);
                 yield return abr;
                 var prefab = abr.asset as GameObject;
                 if (prefab != null)
                 {
-                    GameObject.Instantiate(prefab, Vector3.zero, Quaternion.identity);
+                    Instantiate(prefab, Vector3.zero, Quaternion.identity);
                 }
             }
         }
+
+        AssetBundleManager bundleManager = AssetBundleManager.Factory(uri, m_bundleName);
+        yield return bundleManager.GetAssetBundles();
+        Bundle = bundleManager.Bundle;
+
+        if (Bundle != null)
+        {
+            foreach (string assetName in Bundle.GetAllAssetNames())
+            {
+                var abr = Bundle.LoadAssetAsync<GameObject>(assetName);
+                yield return abr;
+                var prefab = abr.asset as GameObject;
+                if (prefab != null)
+                {
+                    Instantiate(prefab, Vector3.zero, Quaternion.identity);
+                }
+            }
+        }
+
+
     }
 }
