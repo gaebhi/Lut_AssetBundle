@@ -1,12 +1,12 @@
-# [Postprocessing - Lut(LookUpTexture) / AssetBundle Build / Load] 
+# [Postprocessing - Lut / AssetBundle Build & Load] 
 
 ## 1.설명
 * Postprocessing - Lut(LookUpTexture)
- - LookUpTexture를 통한 간단한 Color grading
+  - LookUpTexture를 통한 간단한 Color grading
  
 * AssetBundle
- - AssetBundle Build
- - AssetBundle Load
+  - AssetBundle Build
+  - AssetBundle Load
  
 * Client : Unity 2017+
 
